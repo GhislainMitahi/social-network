@@ -1,22 +1,24 @@
 <?php
+session_start();
+require('config/dbConnect.php');
+require('include/functions.php');
+require('include/constantes.php');
+
 // si le formulaire a été soumise 
 if(isset($_POST['register']))
 {
-  require('config/dbConnect.php');
-  require('include/functions.php');
-  require('include/constantes.php'); 
 
   // si tout les champs ont était remplies
-    if(not_empty(["name","pseudo","email","password","password_confirm"])){
+    if(not_empty(['name','pseudo','email','password','password_confirm'])){
 
           $errors = []; 
           extract($_POST);
 
           if(mb_strlen($pseudo) < 3){
             $errors[] = "pseudo trop cours ! (minimum 3 caractère)";
-          }
+          }  
 
-          if(! filter_var($email,FILTER_VALIDATE_EMAIL)){
+          if(filter_var($email,FILTER_VALIDATE_EMAIL)){
             $errors[] = "Adresse email invalide";
           }
 
@@ -31,14 +33,14 @@ if(isset($_POST['register']))
             }
           }
 
-          if(is_already_in_use("pseudo", $pseudo, "users"))
+          if( is_already_in_use('pseudo', $pseudo, 'users' ))
           {
-            $errors[] = "pseudo déjà utilisé";
+            $errors[] = "pseudo déjà utilise";
           }
 
-          if(is_already_in_use("email", $email, "users"))
+          if(is_already_in_use('email', $email, 'users'))
           {
-            $erros[] = "Adresse E-mail déjà utilisé";
+            $errors[] = "Adresse E-mail déjà utilise";
           }
 
           if(count($errors) == 0)
@@ -57,32 +59,46 @@ if(isset($_POST['register']))
 
             $to = $email;
             $subject = WEBSITE_NAME. "- ACTIVATION DE COMPTE";
+            $password = sha1($password);
             $token = sha1($pseudo.$email.$password);
             
             ob_start();
-            require('templetes/emails/activation.tmpl.php');
-
+            require('templates/emails/activation.tmpl.php');
             $content = ob_get_clean();
 
-            $header = 'MINE-version:1.0'."\r\n";
-            $headers = 'content-type:text/hml; charset=iso-8895-1'."\r\n"; 
-            email($to, $subject, $content, $headers);
+            $headers = 'MIME-Version: 1.0'. "\r\n";
+            $headers = 'Content-type: text/html; charset=iso-8859-1'. "\r\n";
+            mail($to, $subject, $content, $headers);
 
-            echo "mail d'activation vient d'etre envoye !";
+            
  
-            // informer à l'utilisateur pour qu'il verifie sa boite de reception  
+            // informer    à l'utilisateur pour qu'il verifie sa boite de reception  
+
+            set_flash("mail d'activation vient d'etre envoye !" , 'success');
+
+            $q = $db->prepare('INSERT INTO users(name, pseudo,email, password) VALUES (:name, :pseudo, :email, :password)');
+
+            $q->execute([
+              'name' => $name,
+              'pseudo' => $speudo,
+              'email' => $email,
+              'password' => ha1($password)
+            ]);
+
+            redirect('index.php');
 
 
-
-          }
-
-    }
-    else
-    {
+        } else {
+            save_input_data();
+        }
+    } else {
         $errors[] = "Veillez remplir tout les champs SVP !!";
+        save_input_data();
+        }
+} else {
+      clear_input_data();
+      }
 
-    }
-}
 ?>
 
 <?php include('views/register.view.php'); ?>

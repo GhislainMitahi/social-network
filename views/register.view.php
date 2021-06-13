@@ -3,27 +3,30 @@
 
 <div id="main_content">
     <div class="container">
-        <h1>Devenez menbre imediatemment ?</h1>
+        <h1 class="lead">Devenez menbre imediatemment ?</h1>
+
+        <?php include('partials/_error.php'); ?>
+
         <form method="post" class="bg-light col-md-6" autocomplete="off">
 
             <!--name fild -->
 
             <div class="form-group" >
                     <label class="control-label" for="name">Nom: </label>
-                    <input type="text" class="form-control" id="name" name="name" required="required"/>
+                    <input type="text"class="form-control" id="name" name="name"  value="<?= get_input('name')?>" required = "required" />
             </div>
 
             <!-- pseudo fild -->
             <div class="form-group">
                     <label class="control-label" for="pseudo">Pseudo: </label>
-                    <input type="text" class="form-control" id="pseudo" name="pseudo" required="required"/>
+                    <input type="text"  class="form-control" id="pseudo" name="pseudo" value="<?= get_input('pseudo')?>" required="required"/>
             </div>
 
             <!--mailL fild -->
 
             <div class="form-group">
                     <label class="control-label" for="email">Adresse-Email: </label>
-                    <input type="email" class="form-control" id="email" name="email"/>
+                    <input type="email"  class="form-control" id="email" name="email" value="<?= get_input('email')?>" required = "required"/>
             </div>
 
             <!-- password init fild -->
