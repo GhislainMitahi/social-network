@@ -6,5 +6,5 @@ A social project to link people from all over the world 😃
 
 To get the local copy run in your terminal
 ```
-git clone https://github.com/GhislainMitahi/social-network/edit/login/README.md
+git clone git@github.com:GhislainMitahi/social-network.git
 ```
